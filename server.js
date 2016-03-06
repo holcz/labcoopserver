@@ -1,32 +1,45 @@
 var express = require('express')
-//var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-var expressSession = require('express-session');
 var mongoose = require('mongoose');
+var passport = require('passport');
+var authController = require('./controllers/authentication');
 
-//App
+//App config
 var app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(expressSession({secret: 'super secret key'}));
 app.use(passport.initialize());
-app.use(passport.session());
 
-//Passport config
-//TODO: refactor into a separate file
-var User = require('./models/User');
-passport.use(new LocalStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
-
-//MongoDB connect
+//MongoDB
 var db = require('./config/db');
 mongoose.connect(db.url);
 
-var router = require('./routes/api');
-app.use('/', router);
+//TODO: implement it in a separate file: router or routes/api
+var router = express.Router();
+var mealController = require('./controllers/meal');
+router.route('/meals')
+  .post(authController.isAuthenticated, mealController.postMeal)
+  .get(authController.isAuthenticated, mealController.getMeals);
+
+router.route('/meals/:meal_id')
+  .get(authController.isAuthenticated, mealController.getMeal)
+  .put(authController.isAuthenticated, mealController.putMeal)
+  .delete(authController.isAuthenticated, mealController.deleteMeal);
+
+var userController = require('./controllers/user');
+router.route('/user')
+  .post(userController.postUser)
+  .get(authController.isAuthenticated, userController.getUser)
+  .put(authController.isAuthenticated,userController.putUser)
+  .delete(authController.isAuthenticated,userController.deleteUser);
+
+// router.route('/users/:username')
+//   .get(authController.isAuthenticated,userController.getUser)
+//   .put(authController.isAuthenticated,userController.putUser)
+//   .delete(authController.isAuthenticated,userController.deleteUser);
+
+// Register all our routes with /api
+app.use('/api', router);
 
 //Error handlers
 app.use(function(req, res, next){
@@ -42,9 +55,6 @@ app.use(function(err, req, res, next){
     res.send({ error: err.message });
     return;
 });
-//var users = require('./routes/users');
-
-module.exports = app;
 
 app.listen(1221, function(){
   console.log('Labcoop homework server is running on 1221');
