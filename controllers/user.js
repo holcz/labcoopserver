@@ -7,7 +7,8 @@ exports.postUser = function(req, res){
       email: req.body.email,
       firstname: (req.body.firstname != undefined)?req.body.firstname:'',
       lastname: (req.body.lastname != undefined)?req.body.lastname:'',
-      gender: (req.body.gender != undefined)?req.body.gender:''
+      gender: (req.body.gender != undefined)?req.body.gender:'',
+      maxCalories: (req.body.maxCalories != undefined)?req.body.maxCalories:0
     }
   );
 
