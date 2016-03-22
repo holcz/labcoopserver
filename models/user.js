@@ -5,10 +5,11 @@ var Schema = mongoose.Schema;
 var User = new Schema({
   username: {type: String, required: true, unique: true},
   password: {type: String, required: true},
-  email: {type: String, required: true},
+  email: String,
   firstname: String,
   lastname: String,
   gender: String,
+  maxCalories: {type: Number, default: 0}
 });
 
 User.pre('save', function(callback) {

@@ -64,6 +64,10 @@ exports.putUser = function(req, res) {
         user.gender = req.body.gender;
       }
 
+      if (req.body.maxCalories != undefined){
+        user.maxCalories = req.body.maxCalories;
+      }
+
       user.save(function(err) {
         if (err){
           res.send(err);
