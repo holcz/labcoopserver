@@ -1,4 +1,4 @@
-var Meal = require('../models/Meal');
+var Meal = require('../models/meal');
 
 // Create endpoint /api/meals for POSTS
 exports.postMeal = function(req, res) {
